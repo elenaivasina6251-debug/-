@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Налоговый калькулятор 2026 — Навигатор режимов</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sea: {
+                            50: '#E7FAFF',
+                            100: '#C2F0FC',
+                            200: '#9CE3EE',
+                            300: '#74D4E6',
+                            400: '#59C7D8',
+                            500: '#49AABA',
+                            600: '#2C8C9C',
+                            700: '#167581',
+                            800: '#0F5660',
+                            900: '#093940',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Sea Theme Fallbacks -->
+    <style>
+        :root {
+            --sea-50: #E7FAFF;
+            --sea-100: #C2F0FC;
+            --sea-200: #9CE3EE;
+            --sea-300: #74D4E6;
+            --sea-400: #59C7D8;
+            --sea-500: #49AABA;
+            --sea-600: #2C8C9C;
+            --sea-700: #167581;
+            --sea-800: #0F5660;
+            --sea-900: #093940;
+        }
+
+        body {
+            background-color: #E7FAFF;
+            color: #093940;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .sea-card {
+            background-color: #ffffff;
+            border: 1px solid #9CE3EE;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px -2px rgba(22, 117, 129, 0.08);
+        }
+
+        .sea-gradient-header {
+            background: linear-gradient(135deg, #167581 0%, #49AABA 100%);
+        }
+
+        .sea-gradient-hero {
+            background: linear-gradient(135deg, #167581 0%, #2C8C9C 50%, #49AABA 100%);
+        }
+
+        .matrix-cell {
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #9CE3EE;
+            background-color: #ffffff;
+            cursor: pointer;
+        }
+
+        .matrix-cell:hover {
+            border-color: #167581;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22, 117, 129, 0.15);
+        }
+
+        .matrix-cell-best {
+            border: 2px solid #10B981 !important;
+            background-color: #F0FDF4 !important;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25) !important;
+        }
+
+        .matrix-cell-selected {
+            border: 2px solid #167581 !important;
+            background-color: #E7FAFF !important;
+        }
+
+        .swipe-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .swipe-container::-webkit-scrollbar-track {
+            background: #E7FAFF;
+            border-radius: 4px;
+        }
+        .swipe-container::-webkit-scrollbar-thumb {
+            background: #59C7D8;
+            border-radius: 4px;
+        }
+
+        .modal-backdrop {
+            background-color: rgba(9, 57, 64, 0.6);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="p-3 sm:p-6 lg:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+
+        <!-- Top Header Bar -->
+        <header class="sea-card sea-gradient-header p-4 sm:p-6 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="space-y-1">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-calculator text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-black tracking-tight">Налоговый калькулятор 2026</h1>
+                        <p class="text-xs sm:text-sm text-sea-100 font-medium">Сравнение налоговых режимов и ставки НДС для ИП и ООО</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5 self-end md:self-auto">
+                <!-- Methodology Explanation Tab Button -->
+                <button onclick="openMethodologyModal()" class="bg-white/20 hover:bg-white/30 text-white border border-white/30 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition shadow-sm backdrop-blur-md">
+                    <i class="fa-solid fa-book-open text-amber-300"></i>
+                    <span>Как осуществляется расчёт?</span>
+                </button>
+
+                <!-- Legislation Parameters Button -->
+                <button onclick="openPasswordModal()" class="bg-white/15 hover:bg-white/25 text-white border border-white/30 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition shadow-sm backdrop-blur-md" title="Параметры закона">
+                    <i class="fa-solid fa-sliders text-sea-200"></i>
+                    <span>Параметры закона</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- LEFT PANEL: Inputs (4 Cols) -->
+            <div class="lg:col-span-4 sea-card p-5 sm:p-6 space-y-5">
+                <div class="border-b border-sea-100 pb-3 flex items-center justify-between">
+                    <h2 class="text-lg font-black text-sea-900 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-sea-600"></i> Ваши данные
+                    </h2>
+                    <span class="text-xs font-semibold text-sea-600 bg-sea-50 px-2.5 py-1 rounded-full border border-sea-200">2026 год</span>
+                </div>
+
+                <!-- 1. Org Form Toggle -->
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-sea-800 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>Организационная форма</span>
+                        <i class="fa-solid fa-circle-info text-sea-400 text-[11px]" title="ИП или ООО"></i>
+                    </label>
+                    <div class="grid grid-cols-2 gap-2 bg-sea-50 p-1 rounded-xl border border-sea-200">
+                        <button type="button" id="btn-org-ip" onclick="setOrgForm('IP')" class="py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 bg-sea-700 text-white shadow-sm">
+                            <i class="fa-solid fa-user"></i> ИП
+                        </button>
+                        <button type="button" id="btn-org-ooo" onclick="setOrgForm('OOO')" class="py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 text-sea-800 hover:bg-white/60">
+                            <i class="fa-solid fa-building"></i> ООО
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. Revenue -->
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-bold text-sea-800 flex items-center gap-1.5">
+                            <span>Выручка (с НДС, если есть)</span>
+                            <i class="fa-solid fa-circle-info text-sea-400 text-[11px]" title="Общая сумма, которую платит покупатель"></i>
+                        </label>
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="input-revenue-display" oninput="handleCurrencyInput(this, 'revenue')" class="w-full pl-3.5 pr-8 py-2.5 rounded-xl border border-sea-200 bg-white text-sea-900 font-bold text-sm sm:text-base focus:ring-2 focus:ring-sea-500 focus:border-sea-500 outline-none transition" value="300 000 000">
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 font-bold text-sea-500 text-sm">₽</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-medium">Общая сумма, которую платит покупатель</p>
+
+                    <!-- Manual VAT Rate Selector -->
+                    <div class="pt-2">
+                        <label class="text-[11px] font-bold text-sea-800 block mb-1">Ставка НДС по выручке:</label>
+                        <select id="input-custom-vat" onchange="calculateAndRenderAll()" class="w-full text-xs font-semibold p-2 rounded-xl border border-sea-200 bg-sea-50 text-sea-900 focus:ring-2 focus:ring-sea-500 outline-none">
+                            <option value="auto">Автоматически (по лимитам законодательства)</option>
+                            <option value="0">Без НДС (0%)</option>
+                            <option value="5_7">НДС 5% / 7% (Пониженная ставка УСН)</option>
+                            <option value="22">НДС 22% (Стандартная ставка)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 3. Variable Expenses -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-sea-800 flex items-center gap-1.5">
+                        <span>Переменные расходы</span>
+                        <i class="fa-solid fa-circle-info text-sea-400 text-[11px]" title="Прямые расходы на сырье, закупки"></i>
+                    </label>
+                    <div class="grid grid-cols-12 gap-2">
+                        <div class="col-span-8 relative">
+                            <input type="text" id="input-var-exp-display" oninput="handleCurrencyInput(this, 'varExp')" class="w-full pl-3 pr-7 py-2 rounded-xl border border-sea-200 bg-white text-sea-900 font-bold text-xs sm:text-sm focus:ring-2 focus:ring-sea-500 outline-none" value="12 000 000">
+                            <span class="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-sea-500 text-xs">₽</span>
+                        </div>
+                        <div class="col-span-4 relative">
+                            <input type="number" id="input-var-exp-pct" oninput="handlePercentInput(this, 'varExp')" class="w-full pl-2 pr-6 py-2 rounded-xl border border-sea-200 bg-sea-50 text-sea-900 font-bold text-xs sm:text-sm text-center focus:ring-2 focus:ring-sea-500 outline-none" value="4" min="0" max="100">
+                            <span class="absolute right-2 top-1/2 -translate-y-1/2 font-bold text-sea-500 text-xs">%</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <span class="text-[11px] text-slate-500 font-medium">Доля закупок у плательщиков НДС:</span>
+                        <div class="w-20 relative">
+                            <input type="number" id="input-var-vat-share" oninput="calculateAndRenderAll()" class="w-full pr-5 text-right font-bold text-xs text-sea-800 bg-transparent border-b border-sea-300 focus:border-sea-600 outline-none" value="60" min="0" max="100">
+                            <span class="absolute right-0 top-0 font-bold text-sea-600 text-xs">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Fixed Expenses -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-sea-800 flex items-center gap-1.5">
+                        <span>Постоянные расходы</span>
+                        <i class="fa-solid fa-circle-info text-sea-400 text-[11px]" title="Аренда, коммуналка, реклама"></i>
+                    </label>
+                    <div class="grid grid-cols-12 gap-2">
+                        <div class="col-span-8 relative">
+                            <input type="text" id="input-fix-exp-display" oninput="handleCurrencyInput(this, 'fixExp')" class="w-full pl-3 pr-7 py-2 rounded-xl border border-sea-200 bg-white text-sea-900 font-bold text-xs sm:text-sm focus:ring-2 focus:ring-sea-500 outline-none" value="6 000 000">
+                            <span class="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-sea-500 text-xs">₽</span>
+                        </div>
+                        <div class="col-span-4 relative">
+                            <input type="number" id="input-fix-exp-pct" oninput="handlePercentInput(this, 'fixExp')" class="w-full pl-2 pr-6 py-2 rounded-xl border border-sea-200 bg-sea-50 text-sea-900 font-bold text-xs sm:text-sm text-center focus:ring-2 focus:ring-sea-500 outline-none" value="2" min="0" max="100">
+                            <span class="absolute right-2 top-1/2 -translate-y-1/2 font-bold text-sea-500 text-xs">%</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <span class="text-[11px] text-slate-500 font-medium">Доля расходов с НДС:</span>
+                        <div class="w-20 relative">
+                            <input type="number" id="input-fix-vat-share" oninput="calculateAndRenderAll()" class="w-full pr-5 text-right font-bold text-xs text-sea-800 bg-transparent border-b border-sea-300 focus:border-sea-600 outline-none" value="60" min="0" max="100">
+                            <span class="absolute right-0 top-0 font-bold text-sea-600 text-xs">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Employee Contributions -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-sea-800 flex items-center gap-1.5">
+                        <span>Страховые взносы за работников</span>
+                        <i class="fa-solid fa-circle-info text-sea-400 text-[11px]" title="Взносы с ФОТ наемных работников"></i>
+                    </label>
+                    <div class="grid grid-cols-12 gap-2">
+                        <div class="col-span-8 relative">
+                            <input type="text" id="input-emp-cont-display" oninput="handleCurrencyInput(this, 'empCont')" class="w-full pl-3 pr-7 py-2 rounded-xl border border-sea-200 bg-white text-sea-900 font-bold text-xs sm:text-sm focus:ring-2 focus:ring-sea-500 outline-none" value="900 000">
+                            <span class="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-sea-500 text-xs">₽</span>
+                        </div>
+                        <div class="col-span-4 relative">
+                            <input type="number" id="input-emp-cont-pct" oninput="handlePercentInput(this, 'empCont')" class="w-full pl-2 pr-6 py-2 rounded-xl border border-sea-200 bg-sea-50 text-sea-900 font-bold text-xs sm:text-sm text-center focus:ring-2 focus:ring-sea-500 outline-none" value="0.3" min="0" max="100" step="0.1">
+                            <span class="absolute right-2 top-1/2 -translate-y-1/2 font-bold text-sea-500 text-xs">%</span>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-medium leading-tight">Годовая сумма. Взносы ИП «за себя» считаются автоматически.</p>
+                </div>
+
+                <!-- Dynamic IP Deduction Hint -->
+                <div id="ip-deduction-hint" class="bg-sea-50 p-3 rounded-xl border border-sea-200 text-xs font-medium text-sea-800 leading-snug">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- RIGHT TOP: Hero Card + Comparison Matrix (8 Cols) -->
+            <div class="lg:col-span-8 space-y-6">
+
+                <!-- Optimal Hero Card -->
+                <div class="sea-card sea-gradient-hero p-5 sm:p-6 text-white space-y-3 relative overflow-hidden shadow-lg">
+                    <div class="flex items-center justify-between border-b border-white/20 pb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-crown text-amber-300 text-xl animate-pulse"></i>
+                            <span class="text-xs font-extrabold uppercase tracking-widest text-amber-200">Оптимальный режим</span>
+                        </div>
+                        <span id="hero-badge-tag" class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold text-white backdrop-blur-md border border-white/30">
+                            УСН «Доходы»
+                        </span>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-1">
+                        <div>
+                            <h2 id="hero-title" class="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
+                                <span>УСН «Доходы», НДС 7%</span>
+                            </h2>
+                            <p id="hero-sub" class="text-xs sm:text-sm text-sea-100 font-medium pt-1">Максимальная чистая прибыль при заданных параметрах</p>
+                        </div>
+                        <div class="text-left sm:text-right">
+                            <span class="text-xs text-sea-200 font-semibold block">Чистая прибыль в год</span>
+                            <span id="hero-net-profit" class="text-2xl sm:text-3xl lg:text-4xl font-black text-amber-300 tracking-tight">250 111 259 ₽</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3 border-t border-white/15 text-xs">
+                        <div>
+                            <span class="text-sea-200 block text-[11px]">Операционная прибыль:</span>
+                            <span id="hero-op-profit" class="font-extrabold text-white">265 945 536 ₽</span>
+                        </div>
+                        <div>
+                            <span class="text-sea-200 block text-[11px]">Всего налогов + взносов:</span>
+                            <span id="hero-total-tax" class="font-extrabold text-white">30 609 533 ₽</span>
+                        </div>
+                        <div class="col-span-2 sm:col-span-1">
+                            <span class="text-sea-200 block text-[11px]">Выигрыш vs худший вариант:</span>
+                            <span id="hero-gain" class="font-extrabold text-amber-300">+70 228 681 ₽</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sea-card p-5 sm:p-6 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-sea-100 pb-3">
+                        <div>
+                            <h3 class="text-base sm:text-lg font-black text-sea-900">Чистая прибыль по всем сценариям</h3>
+                            <p class="text-xs text-slate-500 font-medium">Нажмите на ячейку, чтобы увидеть детальный расчёт P&L</p>
+                        </div>
+                        <span class="text-[11px] font-bold text-sea-600 bg-sea-50 px-2.5 py-1 rounded-full border border-sea-200 self-start sm:self-auto">
+                            <i class="fa-solid fa-hand-pointer mr-1"></i> Интерактивная таблица
+                        </span>
+                    </div>
+
+                    <div class="swipe-container overflow-x-auto rounded-2xl border border-sea-200 bg-white">
+                        <table class="w-full text-left text-xs sm:text-sm min-w-[760px] border-collapse">
+                            <thead>
+                                <tr class="bg-sea-50 border-b border-sea-200 text-sea-900 font-bold">
+                                    <th class="p-3.5 w-36 border-r border-sea-200 text-sea-700">НДС / РЕЖИМ</th>
+                                    <th class="p-3.5 text-center">УСН «Доходы»</th>
+                                    <th class="p-3.5 text-center">УСН «Д − Р»</th>
+                                    <th class="p-3.5 text-center">ОСНО</th>
+                                    <th class="p-3.5 text-center">АУСН «Доходы»</th>
+                                    <th class="p-3.5 text-center">АУСН «Д − Р»</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrix-tbody" class="divide-y divide-sea-100 font-medium">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- LEFT BOTTOM: Rating Chart (5 Cols) -->
+            <div class="lg:col-span-5 sea-card p-5 sm:p-6 space-y-4">
+                <div class="border-b border-sea-100 pb-3">
+                    <h3 class="text-base font-extrabold text-sea-900">Сравнение сценариев</h3>
+                    <p class="text-xs text-slate-500 font-medium">Чистая прибыль за год, от лучшего к худшему</p>
+                </div>
+
+                <div id="scenarios-chart-container" class="space-y-3 pt-1">
+                    <!-- Dynamically populated bars -->
+                </div>
+            </div>
+
+            <!-- RIGHT BOTTOM: Detailed Calculation Panel (7 Cols) -->
+            <div class="lg:col-span-7 sea-card p-5 sm:p-6 space-y-5">
+                <div class="border-b border-sea-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 id="pnl-header-title" class="text-base sm:text-lg font-black text-sea-900">УСН «Доходы» · НДС 5% / 7%</h3>
+                        <p id="pnl-header-sub" class="text-xs text-slate-500 font-medium">Детальный расчёт чистой прибыли</p>
+                    </div>
+                    <span id="pnl-winner-badge" class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold inline-flex items-center gap-1.5 self-start sm:self-auto">
+                        <i class="fa-solid fa-crown text-amber-500 text-xs"></i> Оптимальный вариант
+                    </span>
+                </div>
+
+                <!-- Top Metric Cards -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div class="bg-sea-50 p-3 rounded-xl border border-sea-100 space-y-1">
+                        <span class="text-[11px] text-slate-500 font-medium block">Чистая прибыль</span>
+                        <span id="card-pnl-net" class="text-sm sm:text-base font-black text-emerald-600 block">250 111 259 ₽</span>
+                    </div>
+                    <div class="bg-sea-50 p-3 rounded-xl border border-sea-100 space-y-1">
+                        <span class="text-[11px] text-slate-500 font-medium block">Налог по режиму</span>
+                        <span id="card-pnl-regime-tax" class="text-xs sm:text-sm font-bold text-slate-800 block">15 834 277 ₽</span>
+                    </div>
+                    <div class="bg-sea-50 p-3 rounded-xl border border-sea-100 space-y-1">
+                        <span class="text-[11px] text-slate-500 font-medium block">НДС к уплате</span>
+                        <span id="card-pnl-vat" class="text-xs sm:text-sm font-bold text-slate-800 block">14 775 256 ₽</span>
+                    </div>
+                    <div class="bg-sea-50 p-3 rounded-xl border border-sea-100 space-y-1">
+                        <span class="text-[11px] text-slate-500 font-medium block">Всего платежей</span>
+                        <span id="card-pnl-total-tax" class="text-xs sm:text-sm font-black text-slate-900 block">30 609 533 ₽</span>
+                    </div>
+                </div>
+
+                <!-- Detailed P&L Table -->
+                <div class="overflow-x-auto rounded-xl border border-sea-200">
+                    <table class="w-full text-left text-xs sm:text-sm">
+                        <thead>
+                            <tr class="bg-sea-50 border-b border-sea-200 text-sea-800 font-bold">
+                                <th class="p-3">СТРОКА</th>
+                                <th class="p-3 text-right">СУММА</th>
+                                <th class="p-3 text-right">% ВЫРУЧКИ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pnl-tbody" class="divide-y divide-slate-100 font-medium">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Legislative Notice Box -->
+        <div class="bg-amber-50/90 border border-amber-200 p-4 sm:p-5 rounded-2xl text-xs sm:text-sm text-amber-950 space-y-1.5 shadow-sm">
+            <h4 class="font-black text-amber-900 text-sm sm:text-base flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-amber-600"></i> НДС 5% / 7% и Лимиты УСН 2026 года
+            </h4>
+            <p class="leading-relaxed text-amber-900 font-medium">
+                • Выручка от <strong>20.0 млн</strong> до <strong>272.5 млн ₽</strong> — применяется пониженная ставка НДС <strong>5%</strong>.<br>
+                • При превышении дохода <strong>272.5 млн ₽</strong> применяется пониженная ставка НДС <strong>7%</strong> ко всей выручке.<br>
+                • При превышении дохода <strong>490.5 млн ₽</strong> утрачивается право на УСН и производится автоматический переход на <strong>ОСНО</strong>.
+            </p>
+        </div>
+
+        <!-- Consultation Request Accordion -->
+        <div class="sea-card overflow-hidden">
+            <button type="button" onclick="toggleAccordion()" class="w-full sea-gradient-header p-5 text-white flex items-center justify-between text-left transition hover:opacity-95">
+                <div class="space-y-0.5">
+                    <h3 class="text-base sm:text-lg font-black flex items-center gap-2">
+                        <i class="fa-solid fa-headset text-sea-200"></i> Консультация
+                    </h3>
+                    <p class="text-xs text-sea-100 font-medium">Оставьте контакты — обсудим задачи вашего бизнеса и подберем формат работы.</p>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm text-white">
+                    <i id="accordion-icon" class="fa-solid fa-chevron-down transition-transform duration-300"></i>
+                </div>
+            </button>
+
+            <!-- Expanded Form Content -->
+            <div id="accordion-content" class="hidden p-5 sm:p-6 bg-white space-y-5 border-t border-sea-100">
+                <form id="consultation-form" onsubmit="handleFormSubmit(event)" class="space-y-4 max-w-2xl">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-sea-900">Имя <span class="text-rose-500">*</span></label>
+                            <input type="text" id="lead-name" required placeholder="Как к вам обращаться" class="w-full p-2.5 rounded-xl border border-sea-200 bg-sea-50/50 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-sea-500 outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-sea-900">Телефон <span class="text-rose-500">*</span></label>
+                            <input type="tel" id="lead-phone" required placeholder="+7 (___) ___-__-__" class="w-full p-2.5 rounded-xl border border-sea-200 bg-sea-50/50 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-sea-500 outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Contact Channel Choice -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-sea-900">Куда удобнее ответить</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" onclick="setContactChannel('Phone')" id="btn-chan-phone" class="py-2 px-3 rounded-xl text-xs font-bold border transition text-center border-sea-600 bg-sea-600 text-white">
+                                Телефон
+                            </button>
+                            <button type="button" onclick="setContactChannel('MAX')" id="btn-chan-max" class="py-2 px-3 rounded-xl text-xs font-bold border transition text-center border-sea-200 bg-sea-50 text-sea-800 hover:bg-sea-100">
+                                MAX
+                            </button>
+                            <button type="button" onclick="setContactChannel('Telegram')" id="btn-chan-tg" class="py-2 px-3 rounded-xl text-xs font-bold border transition text-center border-sea-200 bg-sea-50 text-sea-800 hover:bg-sea-100">
+                                Telegram
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Question Field -->
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-sea-900">Вопрос (необязательно)</label>
+                        <textarea id="lead-question" rows="3" placeholder="Коротко опишите ситуацию в бизнесе" class="w-full p-2.5 rounded-xl border border-sea-200 bg-sea-50/50 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-sea-500 outline-none resize-none"></textarea>
+                    </div>
+
+                    <!-- Personal Data Consent Links -->
+                    <div class="space-y-2 pt-1">
+                        <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-700 leading-snug">
+                            <input type="checkbox" id="consent-pd" required class="mt-0.5 rounded border-sea-300 text-sea-600 focus:ring-sea-500">
+                            <span>
+                                Я даю <button type="button" onclick="openDocModal('consent')" class="text-sea-700 underline font-semibold hover:text-sea-900">Согласие</button> 
+                                на обработку персональных данных в соответствии с 
+                                <button type="button" onclick="openDocModal('policy')" class="text-sea-700 underline font-semibold hover:text-sea-900">Политикой в отношении обработки ПД</button>
+                            </span>
+                        </label>
+
+                        <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-700 leading-snug">
+                            <input type="checkbox" id="consent-news" class="mt-0.5 rounded border-sea-300 text-sea-600 focus:ring-sea-500">
+                            <span>
+                                Я согласен(-на) получать 
+                                <button type="button" onclick="openDocModal('newsletter')" class="text-sea-700 underline font-semibold hover:text-sea-900">новости и рекламные рассылки</button>
+                            </span>
+                        </label>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="w-full py-3 bg-sea-700 hover:bg-sea-800 text-white font-extrabold text-sm rounded-xl transition shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Отправить заявку
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center text-[11px] text-slate-500 font-medium leading-relaxed px-2 pt-2 border-t border-sea-200">
+            Расчёт носит справочный характер и основан на ставках налоговой реформы, действующих с 1 января 2026 года (ФЗ № 425-ФЗ): НДС 22%, пониженный НДС УСН 5%/7%, прогрессивный НДФЛ 13–22%, фиксированные взносы ИП 57 390 ₽. Все ставки можно поменять в разделе «Параметры закона». Не является налоговой консультацией.
+        </footer>
+
+    </div>
+
+    <!-- Modal 0: Calculation Methodology Modal -->
+    <div id="modal-methodology" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-sea-200">
+            <div class="flex justify-between items-center border-b border-sea-100 pb-3 mb-3">
+                <h3 class="text-base sm:text-lg font-black text-sea-900 flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-sea-600"></i> Как осуществляется расчёт налогов?
+                </h3>
+                <button onclick="closeMethodologyModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="overflow-y-auto text-xs sm:text-sm text-slate-700 space-y-4 leading-relaxed pr-2">
+                <div class="bg-sea-50 p-3.5 rounded-xl border border-sea-200 space-y-1">
+                    <h4 class="font-bold text-sea-900 text-sm">1. Пониженные ставки НДС 5% и 7% на УСН (ФЗ № 425-ФЗ)</h4>
+                    <p class="text-slate-600">
+                        Если выручка от 20 до 272,5 млн ₽ — НДС равен 5% (`Выручка × 5 / 105`).<br>
+                        Если выручка свыше 272,5 млн ₽ — применяется ставка 7% ко всей выручке (`Выручка × 7 / 107`).
+                    </p>
+                </div>
+
+                <!-- Step-by-step 300M Example Table -->
+                <div class="overflow-x-auto rounded-xl border border-sea-200">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="bg-sea-100 text-sea-900 font-bold border-b border-sea-200">
+                                <th class="p-2.5">Пример выручки</th>
+                                <th class="p-2.5 text-center">Ставка НДС</th>
+                                <th class="p-2.5 text-right">Выручка (с НДС)</th>
+                                <th class="p-2.5 text-right">НДС в бюджет</th>
+                                <th class="p-2.5 text-right">База УСН (без НДС)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-sea-100 font-medium">
+                            <tr>
+                                <td class="p-2.5">До 272,5 млн ₽ (напр., 100 млн)</td>
+                                <td class="p-2.5 text-center font-bold text-sea-700">5%</td>
+                                <td class="p-2.5 text-right font-mono">100 000 000 ₽</td>
+                                <td class="p-2.5 text-right font-mono text-sea-800">4 761 905 ₽</td>
+                                <td class="p-2.5 text-right font-mono">95 238 095 ₽</td>
+                            </tr>
+                            <tr class="bg-amber-50">
+                                <td class="p-2.5 font-bold">Свыше 272,5 млн ₽ (напр., 300 млн)</td>
+                                <td class="p-2.5 text-center font-bold text-amber-700">7%</td>
+                                <td class="p-2.5 text-right font-mono font-bold">300 000 000 ₽</td>
+                                <td class="p-2.5 text-right font-mono text-amber-800 font-bold">19 626 168 ₽</td>
+                                <td class="p-2.5 text-right font-mono font-bold">280 373 832 ₽</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-emerald-50 p-3.5 rounded-xl border border-emerald-200 space-y-1.5 text-emerald-950">
+                    <h4 class="font-bold text-emerald-900 text-sm">2. Важно: Вычет страховых взносов на УСН «Доходы»</h4>
+                    <p class="text-xs leading-relaxed">
+                        По Налоговому кодексу РФ (ст. 346.21) страховые взносы <strong>НЕ вычитаются из выручки</strong>. Они уменьшают <strong>напрямую сумму рассчитанного 6% налога</strong> (налоговый вычет до 50% для организаций и ИП с сотрудниками, и до 100% для ИП без сотрудников).
+                    </p>
+                    <div class="bg-white p-2.5 rounded-lg border border-emerald-300 font-mono text-[11px] space-y-1 text-slate-800">
+                        <div>1) База УСН: 300 000 000 - 19 626 168 (НДС) = 280 373 832 ₽</div>
+                        <div>2) Налог 6% от базы: 280 373 832 × 6% = 16 822 430 ₽</div>
+                        <div>3) Взносы к вычету (сотрудники 900к + ИП 379к): -1 279 208 ₽</div>
+                        <div class="font-bold text-emerald-700">4) Итого налог УСН к уплате: 16 822 430 - 1 279 208 = 15 543 222 ₽</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-sea-100 flex justify-end">
+                <button onclick="closeMethodologyModal()" class="py-2 px-5 bg-sea-700 text-white font-bold text-xs rounded-xl hover:bg-sea-800 transition">
+                    Понятно
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 1: Password Prompt Modal -->
+    <div id="modal-password" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl border border-sea-200">
+            <div class="flex justify-between items-center border-b border-sea-100 pb-3">
+                <h3 class="text-base font-black text-sea-900 flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-amber-500"></i> Доступ к параметрам
+                </h3>
+                <button onclick="closePasswordModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-600 font-medium">Введите пароль для редактирования ставок законодательства 2026 года:</p>
+            <input type="password" id="input-password" class="w-full p-2.5 rounded-xl border border-sea-200 text-sm font-bold outline-none focus:ring-2 focus:ring-sea-500" placeholder="Пароль">
+            <div id="password-error" class="text-xs text-rose-600 font-bold hidden">Неверный пароль!</div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closePasswordModal()" class="py-2 px-4 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700">Отмена</button>
+                <button onclick="checkPassword()" class="py-2 px-4 rounded-xl text-xs font-bold bg-sea-700 hover:bg-sea-800 text-white">Войти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Legislation Parameters Edit Modal -->
+    <div id="modal-params" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl p-6 max-w-xl w-full my-8 space-y-5 shadow-2xl border border-sea-200 text-xs sm:text-sm">
+            <div class="flex justify-between items-center border-b border-sea-100 pb-3">
+                <h3 class="text-lg font-black text-sea-900 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-sea-600"></i> Параметры законодательства 2026
+                </h3>
+                <button onclick="closeParamsModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="font-bold text-sea-800 block mb-1">УСН «Доходы» (%)</label>
+                        <input type="number" id="param-usn-inc" class="w-full p-2 rounded-xl border border-sea-200 font-bold" value="6" step="0.1">
+                    </div>
+                    <div>
+                        <label class="font-bold text-sea-800 block mb-1">УСН «Д − Р» (%)</label>
+                        <input type="number" id="param-usn-dr" class="w-full p-2 rounded-xl border border-sea-200 font-bold" value="15" step="0.1">
+                    </div>
+                    <div>
+                        <label class="font-bold text-sea-800 block mb-1">АУСН «Доходы» (%)</label>
+                        <input type="number" id="param-ausn-inc" class="w-full p-2 rounded-xl border border-sea-200 font-bold" value="8" step="0.1">
+                    </div>
+                    <div>
+                        <label class="font-bold text-sea-800 block mb-1">АУСН «Д − Р» (%)</label>
+                        <input type="number" id="param-ausn-dr" class="w-full p-2 rounded-xl border border-sea-200 font-bold" value="20" step="0.1">
+                    </div>
+                    <div>
+                        <label class="font-bold text-sea-800 block mb-1">Налог на прибыль ООО (%)</label>
+                        <input type="number" id="param-osno-ooo" class="w-full p-2 rounded-xl border border-sea-200 font-bold" value="25" step="0.1">
+                    </div>
+                    <div>
+                        <label class="font-bold text-sea-800 block mb-1">Фикс. взносы ИП (₽)</label>
+                        <input type="number" id="param-ip-fix" class="w-full p-2 rounded-xl border border-sea-200 font-bold" value="57390">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t border-sea-100 pt-3">
+                <button onclick="closeParamsModal()" class="py-2.5 px-4 rounded-xl text-xs font-bold bg-slate-100 text-slate-700">Отмена</button>
+                <button onclick="saveParams()" class="py-2.5 px-5 rounded-xl text-xs font-bold bg-sea-700 hover:bg-sea-800 text-white">Сохранить изменения</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Legal Documents Modal -->
+    <div id="modal-legal-doc" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-sea-200">
+            <div class="flex justify-between items-center border-b border-sea-100 pb-3 mb-3">
+                <h3 id="legal-doc-title" class="text-base sm:text-lg font-black text-sea-900">Юридический документ</h3>
+                <button onclick="closeLegalModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="legal-doc-content" class="overflow-y-auto text-xs sm:text-sm text-slate-700 space-y-3 leading-relaxed pr-2">
+                <!-- Dynamic text content inserted via JS -->
+            </div>
+            <div class="pt-4 border-t border-sea-100 flex justify-end">
+                <button onclick="closeLegalModal()" class="py-2 px-5 bg-sea-700 text-white font-bold text-xs rounded-xl hover:bg-sea-800 transition">
+                    Понятно
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Submission Confirmation Modal -->
+    <div id="modal-submission-success" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl border border-sea-200 text-slate-800 text-center">
+            <div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 border border-emerald-300 flex items-center justify-center mx-auto text-2xl font-bold">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="space-y-1.5">
+                <h3 class="text-lg font-black text-sea-900">Заявка сформирована!</h3>
+                <p class="text-xs text-slate-600 font-medium leading-relaxed">
+                    Данные подготовлены для отправки на <strong class="text-sea-800">elenaivasina6251@gmail.com</strong>.
+                </p>
+            </div>
+
+            <!-- Email Activation Help Note -->
+            <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-left text-[11px] text-amber-900 space-y-1">
+                <p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1 text-amber-600"></i> Важно для владельца почты (первый запуск):</p>
+                <p class="leading-tight">Если это самая первая заявка, сервис FormSubmit выслал одноразовое письмо-активацию. Пожалуйста, откройте ящик <strong>elenaivasina6251@gmail.com</strong> и нажмите 1 раз кнопку <em>«Activate Form»</em>.</p>
+            </div>
+
+            <div class="p-3 bg-sea-50 rounded-xl border border-sea-200 text-left space-y-2 text-xs">
+                <span class="font-bold text-sea-900 block text-[11px] uppercase tracking-wider">Резервная копия заявки:</span>
+                <div id="lead-summary-text" class="font-mono text-[11px] bg-white p-2 rounded border border-sea-100 text-slate-700 whitespace-pre-wrap select-all"></div>
+                
+                <button type="button" onclick="copyLeadToClipboard()" class="w-full py-2 bg-sea-600 hover:bg-sea-700 text-white font-bold rounded-lg transition text-xs flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-copy"></i> Скопировать текст заявки в 1 клик
+                </button>
+            </div>
+
+            <button onclick="closeSuccessModal()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition">
+                Закрыть
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Legislation Parameters Default (2026)
+        let PARAMS = {
+            PASSWORD: 'more2026',
+            USN_INC_RATE: 0.06,
+            USN_DR_RATE: 0.15,
+            USN_DR_MIN_RATE: 0.01,
+            AUSN_INC_RATE: 0.08,
+            AUSN_DR_RATE: 0.20,
+            AUSN_DR_MIN_RATE: 0.03,
+            OSNO_OOO_RATE: 0.25,
+
+            VAT_EXEMPT_LIMIT: 20000000,
+            AUSN_LIMIT: 60000000,
+            VAT_USN_LOW_1: 0.05,
+            VAT_USN_LOW_2: 0.07,
+            VAT_USN_TIER2_LIMIT: 272500000,
+            USN_MAX_LIMIT: 490500000,
+            VAT_OSNO: 0.22,
+
+            IP_FIXED_CONTRIBUTION: 57390,
+            IP_VAR_THRESHOLD: 300000,
+            IP_VAR_RATE: 0.01,
+            IP_VAR_MAX: 321818,
+            IP_TOTAL_MAX: 379208,
+
+            MAX_USN_DEDUCTION_OOO: 0.50
+        };
+
+        // Application State
+        let state = {
+            orgForm: 'IP',
+            revenue: 300000000,
+            varExp: 12000000,
+            varVatShare: 0.60,
+            fixExp: 6000000,
+            fixVatShare: 0.60,
+            empCont: 900000,
+            selectedPnLKey: 'usn_inc_5',
+            contactChannel: 'Phone',
+            accordionOpen: false,
+            lastLeadText: ''
+        };
+
+        // Money Formatters
+        function formatMoney(num) {
+            if (num === null || num === undefined || isNaN(num) || num === -Infinity) return '—';
+            return Math.round(num).toLocaleString('ru-RU') + ' ₽';
+        }
+
+        function formatNumberRaw(num) {
+            if (!num || isNaN(num)) return '0';
+            return Math.round(num).toLocaleString('ru-RU');
+        }
+
+        function parseRawNumber(str) {
+            if (!str) return 0;
+            return parseFloat(str.toString().replace(/\s+/g, '').replace(',', '.')) || 0;
+        }
+
+        // NDFL Scale Calculation for IP (OSNO)
+        function calculateNDFL(income) {
+            if (income <= 0) return 0;
+            if (income <= 2400000) return income * 0.13;
+            if (income <= 5000000) return 312000 + (income - 2400000) * 0.15;
+            if (income <= 20000000) return 702000 + (income - 5000000) * 0.18;
+            if (income <= 50000000) return 3402000 + (income - 20000000) * 0.20;
+            return 9402000 + (income - 50000000) * 0.22;
+        }
+
+        // Calculation Engine
+        function calculateAllRegimes() {
+            state.varVatShare = (parseFloat(document.getElementById('input-var-vat-share').value) || 0) / 100;
+            state.fixVatShare = (parseFloat(document.getElementById('input-fix-vat-share').value) || 0) / 100;
+            const customVatChoice = document.getElementById('input-custom-vat').value;
+
+            const R = state.revenue;
+            const V = state.varExp;
+            const F = state.fixExp;
+            const E = state.empCont;
+
+            // IP Self Contributions
+            let ipSelfCont = 0;
+            if (state.orgForm === 'IP') {
+                let excess = Math.max(R - PARAMS.IP_VAR_THRESHOLD, 0);
+                let varPart = Math.min(excess * PARAMS.IP_VAR_RATE, PARAMS.IP_VAR_MAX);
+                ipSelfCont = Math.min(PARAMS.IP_FIXED_CONTRIBUTION + varPart, PARAMS.IP_TOTAL_MAX);
+            }
+
+            // Dynamic IP deduction hint update
+            const ipHint = document.getElementById('ip-deduction-hint');
+            if (state.orgForm === 'IP') {
+                if (E === 0) {
+                    ipHint.innerHTML = `<i class="fa-solid fa-check text-emerald-600 mr-1"></i> Вычет УСН: <strong class="text-emerald-700">100%</strong> (работает без работников)`;
+                } else {
+                    ipHint.innerHTML = `<i class="fa-solid fa-circle-info text-sea-600 mr-1"></i> Вычет УСН: <strong class="text-sea-700">до 50%</strong> (есть работники)`;
+                }
+            } else {
+                ipHint.innerHTML = `<i class="fa-solid fa-circle-info text-sea-600 mr-1"></i> Вычет УСН: <strong class="text-sea-700">до 50%</strong> (для ООО)`;
+            }
+
+            // 1. Base P&L (without VAT / AUSN)
+            const Op_base = R - V - F - E - (state.orgForm === 'IP' ? ipSelfCont : 0);
+
+            // 2. Direct P&L with 5% or 7% VAT (USN reduced VAT)
+            // Rule: <= 272.5M -> 5% on whole revenue; > 272.5M -> 7% on whole revenue
+            let currentVatRateNum = 0.05;
+            let currentVatRateLabel = '5%';
+            if (R > PARAMS.VAT_USN_TIER2_LIMIT) {
+                currentVatRateNum = 0.07;
+                currentVatRateLabel = '7%';
+            }
+            const output_vat_5_7 = (R * currentVatRateNum) / (1 + currentVatRateNum);
+            const R_5_7 = R - output_vat_5_7;
+            const Op_5_7 = R_5_7 - V - F - E - (state.orgForm === 'IP' ? ipSelfCont : 0);
+
+            // 3. P&L with 22% VAT
+            const R_22 = R / (1 + PARAMS.VAT_OSNO);
+            const output_vat_22 = R - R_22;
+            const V_vat_clean = (V * state.varVatShare) / (1 + PARAMS.VAT_OSNO);
+            const F_vat_clean = (F * state.fixVatShare) / (1 + PARAMS.VAT_OSNO);
+            const V_22 = V_vat_clean + V * (1 - state.varVatShare);
+            const F_22 = F_vat_clean + F * (1 - state.fixVatShare);
+            const total_input_vat = ((V * state.varVatShare) - V_vat_clean) + ((F * state.fixVatShare) - F_vat_clean);
+            const vat_payable_22 = Math.max(output_vat_22 - total_input_vat, 0);
+            const Op_22 = (R_22 - V_22 - F_22) - E - (state.orgForm === 'IP' ? ipSelfCont : 0);
+
+            const results = [];
+
+            function addRegime(key, name, vatOption, vatLabel, opProfit, tax, isApplicable, reasonNotApp = '', outputVat = 0, inputVat = 0, vatPayable = 0) {
+                const netProfit = isApplicable ? (opProfit - tax) : -Infinity;
+                const marginPct = R > 0 && isApplicable ? ((netProfit / R) * 100).toFixed(1) : 0;
+
+                let regimeTaxLabel = 'УСН';
+                if (name.includes('ОСНО')) {
+                    regimeTaxLabel = state.orgForm === 'OOO' ? 'Прибыль' : 'НДФЛ';
+                } else if (name.includes('АУСН')) {
+                    regimeTaxLabel = 'АУСН';
+                }
+
+                results.push({
+                    key,
+                    name,
+                    vatOption,
+                    vatLabel,
+                    opProfit: Math.max(opProfit, 0),
+                    tax: isApplicable ? tax : 0,
+                    netProfit,
+                    marginPct,
+                    isApplicable,
+                    reasonNotApp,
+                    outputVat,
+                    inputVat,
+                    vatPayable,
+                    totalTax: isApplicable ? (tax + vatPayable) : 0,
+                    regimeTaxLabel,
+                    revenueClean: vatOption === '22%' ? R_22 : (vatOption === '5% / 7%' ? R_5_7 : R),
+                    vExpClean: vatOption === '22%' ? V_22 : V,
+                    fExpClean: vatOption === '22%' ? F_22 : F,
+                    ipSelfCont,
+                    empCont: E
+                });
+            }
+
+            const vatExemptAvailable = (customVatChoice === '0' || (customVatChoice === 'auto' && R <= PARAMS.VAT_EXEMPT_LIMIT));
+            const usnAvailable = R <= PARAMS.USN_MAX_LIMIT;
+            const ausnAvailable = R <= PARAMS.AUSN_LIMIT;
+
+            let maxDeductionPct = (state.orgForm === 'IP' && E === 0) ? 1.0 : PARAMS.MAX_USN_DEDUCTION_OOO;
+
+            // --- USN "Income" ---
+            let tax_usn_inc_0 = R * PARAMS.USN_INC_RATE;
+            let deduction_0 = Math.min(ipSelfCont + E, tax_usn_inc_0 * maxDeductionPct);
+            addRegime('usn_inc_0', 'УСН «Доходы»', '0%', 'без НДС', Op_base, Math.max(tax_usn_inc_0 - deduction_0, 0), vatExemptAvailable && usnAvailable, R > PARAMS.USN_MAX_LIMIT ? 'Выручка > 490.5 млн ₽' : 'Выручка > 20 млн ₽');
+
+            let tax_usn_inc_5 = R_5_7 * PARAMS.USN_INC_RATE;
+            let deduction_5 = Math.min(ipSelfCont + E, tax_usn_inc_5 * maxDeductionPct);
+            addRegime('usn_inc_5', 'УСН «Доходы»', '5% / 7%', `НДС ${currentVatRateLabel}`, Op_5_7, Math.max(tax_usn_inc_5 - deduction_5, 0), usnAvailable, 'Выручка > 490.5 млн ₽ (лимит УСН)', output_vat_5_7, 0, output_vat_5_7);
+
+            let tax_usn_inc_22 = R_22 * PARAMS.USN_INC_RATE;
+            let deduction_22 = Math.min(ipSelfCont + E, tax_usn_inc_22 * maxDeductionPct);
+            addRegime('usn_inc_22', 'УСН «Доходы»', '22%', 'НДС 22%', Op_22, Math.max(tax_usn_inc_22 - deduction_22, 0), usnAvailable, 'Выручка > 490.5 млн ₽ (лимит УСН)', output_vat_22, total_input_vat, vat_payable_22);
+
+            // --- USN "Income - Expenses" ---
+            let reg_tax_dr_0 = Op_base * PARAMS.USN_DR_RATE;
+            let min_tax_dr_0 = R * PARAMS.USN_DR_MIN_RATE;
+            addRegime('usn_dr_0', 'УСН «Д − Р»', '0%', 'без НДС', Op_base, Math.max(0, Math.max(reg_tax_dr_0, min_tax_dr_0)), vatExemptAvailable && usnAvailable, R > PARAMS.USN_MAX_LIMIT ? 'Выручка > 490.5 млн ₽' : 'Выручка > 20 млн ₽');
+
+            let reg_tax_dr_5 = Op_5_7 * PARAMS.USN_DR_RATE;
+            let min_tax_dr_5 = R_5_7 * PARAMS.USN_DR_MIN_RATE;
+            addRegime('usn_dr_5', 'УСН «Д − Р»', '5% / 7%', `НДС ${currentVatRateLabel}`, Op_5_7, Math.max(0, Math.max(reg_tax_dr_5, min_tax_dr_5)), usnAvailable, 'Выручка > 490.5 млн ₽ (лимит УСН)', output_vat_5_7, 0, output_vat_5_7);
+
+            let reg_tax_dr_22 = Op_22 * PARAMS.USN_DR_RATE;
+            let min_tax_dr_22 = R_22 * PARAMS.USN_DR_MIN_RATE;
+            addRegime('usn_dr_22', 'УСН «Д − Р»', '22%', 'НДС 22%', Op_22, Math.max(0, Math.max(reg_tax_dr_22, min_tax_dr_22)), usnAvailable, 'Выручка > 490.5 млн ₽ (лимит УСН)', output_vat_22, total_input_vat, vat_payable_22);
+
+            // --- OSNO ---
+            let tax_osno_0 = state.orgForm === 'OOO' ? Math.max(Op_base * PARAMS.OSNO_OOO_RATE, 0) : calculateNDFL(Op_base);
+            addRegime('osno_0', 'ОСНО', '0%', 'без НДС', Op_base, tax_osno_0, vatExemptAvailable, 'Выручка > 20 млн ₽');
+
+            let tax_osno_22 = state.orgForm === 'OOO' ? Math.max(Op_22 * PARAMS.OSNO_OOO_RATE, 0) : calculateNDFL(Op_22);
+            addRegime('osno_22', 'ОСНО', '22%', 'НДС 22%', Op_22, tax_osno_22, true, '', output_vat_22, total_input_vat, vat_payable_22);
+
+            // --- AUSN ---
+            let tax_ausn_inc = R * PARAMS.AUSN_INC_RATE;
+            addRegime('ausn_inc', 'АУСН «Доходы»', '0%', 'без НДС', Op_base, tax_ausn_inc, ausnAvailable, 'Выручка > 60 млн ₽');
+
+            let reg_tax_ausn_dr = Math.max(0, Op_base) * PARAMS.AUSN_DR_RATE;
+            let min_tax_ausn_dr = R * PARAMS.AUSN_DR_MIN_RATE;
+            addRegime('ausn_dr', 'АУСН «Д − Р»', '0%', 'без НДС', Op_base, Math.max(reg_tax_ausn_dr, min_tax_ausn_dr), ausnAvailable, 'Выручка > 60 млн ₽');
+
+            return results;
+        }
+
+        function calculateAndRenderAll() {
+            const results = calculateAllRegimes();
+
+            const validResults = results.filter(r => r.isApplicable && r.netProfit > -Infinity);
+            let best = null;
+            let worst = null;
+
+            if (validResults.length > 0) {
+                validResults.sort((a, b) => b.netProfit - a.netProfit);
+                best = validResults[0];
+                worst = validResults[validResults.length - 1];
+            }
+
+            if (!state.selectedPnLKey || !results.find(r => r.key === state.selectedPnLKey && r.isApplicable)) {
+                if (best) state.selectedPnLKey = best.key;
+            }
+
+            renderHeroCard(best, worst);
+            renderMatrixTable(results, best);
+            renderScenariosChart(validResults, best);
+            renderPnLDetails(results, best);
+        }
+
+        function renderHeroCard(best, worst) {
+            if (!best) return;
+
+            document.getElementById('hero-title').innerHTML = `<i class="fa-solid fa-crown text-amber-300 mr-2"></i> ${best.name}, ${best.vatLabel}`;
+            document.getElementById('hero-badge-tag').innerText = `${state.orgForm} · ${best.vatLabel}`;
+            document.getElementById('hero-net-profit').innerText = formatMoney(best.netProfit);
+            document.getElementById('hero-op-profit').innerText = formatMoney(best.opProfit);
+            document.getElementById('hero-total-tax').innerText = formatMoney(best.totalTax);
+
+            const gain = worst ? (best.netProfit - worst.netProfit) : 0;
+            document.getElementById('hero-gain').innerText = gain > 0 ? `+${formatMoney(gain)}` : '0 ₽';
+        }
+
+        function renderMatrixTable(results, best) {
+            const tbody = document.getElementById('matrix-tbody');
+            tbody.innerHTML = '';
+
+            const vatLevels = [
+                { key: '0%', label: 'Без НДС' },
+                { key: '5% / 7%', label: 'НДС 5% / 7%' },
+                { key: '22%', label: 'НДС 22%' }
+            ];
+
+            const regimeCols = [
+                { regKey: 'usn_inc', name: 'УСН «Доходы»' },
+                { regKey: 'usn_dr', name: 'УСН «Д − Р»' },
+                { regKey: 'osno', name: 'ОСНО' },
+                { regKey: 'ausn_inc', name: 'АУСН «Доходы»' },
+                { regKey: 'ausn_dr', name: 'АУСН «Д − Р»' }
+            ];
+
+            vatLevels.forEach(vat => {
+                const tr = document.createElement('tr');
+
+                let html = `<td class="p-3.5 font-bold text-sea-900 bg-sea-50/90 border-r border-sea-200 text-xs sm:text-sm">${vat.label}</td>`;
+
+                regimeCols.forEach(col => {
+                    let item = results.find(r => {
+                        if (col.regKey === 'usn_inc') return r.name.includes('УСН «Доходы»') && r.vatOption === vat.key;
+                        if (col.regKey === 'usn_dr') return r.name.includes('УСН «Д − Р»') && r.vatOption === vat.key;
+                        if (col.regKey === 'osno') return r.name.includes('ОСНО') && r.vatOption === vat.key;
+                        if (col.regKey === 'ausn_inc') return r.name.includes('АУСН «Доходы»') && r.vatOption === vat.key;
+                        if (col.regKey === 'ausn_dr') return r.name.includes('АУСН «Д − Р»') && r.vatOption === vat.key;
+                        return false;
+                    });
+
+                    if (item) {
+                        if (!item.isApplicable) {
+                            html += `<td class="p-3 text-center text-slate-300 font-bold text-xs" title="${item.reasonNotApp}">—</td>`;
+                        } else {
+                            const isBest = (best && item.key === best.key);
+                            const isSelected = (state.selectedPnLKey === item.key);
+
+                            let cellClass = isBest ? 'matrix-cell-best' : 'matrix-cell';
+                            if (isSelected && !isBest) cellClass += ' matrix-cell-selected';
+
+                            html += `
+                                <td class="p-1.5 text-center swipe-item" onclick="selectRegimeForDetails('${item.key}')">
+                                    <div class="${cellClass} p-2.5 rounded-xl flex flex-col items-center justify-between min-h-[120px] text-center space-y-1 relative">
+                                        ${isBest ? `
+                                            <div class="text-amber-500 font-black text-[11px] flex items-center justify-center gap-1 uppercase tracking-wide">
+                                                <i class="fa-solid fa-crown text-amber-500"></i> Лучший выбор
+                                            </div>
+                                        ` : ''}
+                                        <span class="font-black text-sm sm:text-base tracking-tight text-sea-900">${formatMoney(item.netProfit)}</span>
+                                        <div class="text-[11px] leading-tight text-slate-600 font-medium space-y-0.5 border-t border-sea-100 pt-1 w-full">
+                                            <div>${item.regimeTaxLabel}: <strong class="text-slate-800">${formatNumberRaw(item.tax)} ₽</strong></div>
+                                            ${item.vatPayable > 0 ? `<div>${item.vatLabel}: <strong class="text-slate-800">${formatNumberRaw(item.vatPayable)} ₽</strong></div>` : ''}
+                                            <div class="font-bold text-sea-800 pt-0.5 border-t border-slate-100">Всего: ${formatMoney(item.totalTax)}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                            `;
+                        }
+                    } else {
+                        html += `<td class="p-3 text-center text-slate-300 font-bold">—</td>`;
+                    }
+                });
+
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderScenariosChart(validResults, best) {
+            const container = document.getElementById('scenarios-chart-container');
+            container.innerHTML = '';
+
+            if (validResults.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400">Нет доступных режимов при заданных лимитах</p>`;
+                return;
+            }
+
+            const maxNet = validResults[0].netProfit > 0 ? validResults[0].netProfit : 1;
+
+            validResults.forEach((item, idx) => {
+                const isBest = (best && item.key === best.key);
+                const widthPct = Math.max(Math.min((item.netProfit / maxNet) * 100, 100), 5);
+
+                const barEl = document.createElement('div');
+                barEl.className = 'space-y-1 cursor-pointer';
+                barEl.onclick = () => selectRegimeForDetails(item.key);
+
+                barEl.innerHTML = `
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-slate-800 flex items-center gap-1.5">
+                            ${isBest ? '<i class="fa-solid fa-crown text-amber-500"></i>' : `<span class="text-slate-400 font-mono text-[10px]">${idx + 1}.</span>`}
+                            <span>${item.name} (${item.vatLabel})</span>
+                        </span>
+                        <span class="font-extrabold ${isBest ? 'text-emerald-600' : 'text-slate-700'}">${formatMoney(item.netProfit)}</span>
+                    </div>
+                    <div class="w-full h-3 bg-sea-50 rounded-full overflow-hidden border border-sea-100 p-0.5">
+                        <div class="h-full rounded-full transition-all duration-500 ${isBest ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-sea-500'}" style="width: ${widthPct}%"></div>
+                    </div>
+                `;
+
+                container.appendChild(barEl);
+            });
+        }
+
+        function renderPnLDetails(results, best) {
+            const item = results.find(r => r.key === state.selectedPnLKey) || best || results[0];
+            if (!item) return;
+
+            document.getElementById('pnl-header-title').innerText = `${item.name} · ${item.vatLabel}`;
+
+            const badge = document.getElementById('pnl-winner-badge');
+            if (best && item.key === best.key) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            document.getElementById('card-pnl-net').innerText = formatMoney(item.netProfit);
+            document.getElementById('card-pnl-regime-tax').innerText = formatMoney(item.tax);
+            document.getElementById('card-pnl-vat').innerText = formatMoney(item.vatPayable);
+            document.getElementById('card-pnl-total-tax').innerText = formatMoney(item.totalTax);
+
+            const R = state.revenue;
+            const pnlBody = document.getElementById('pnl-tbody');
+            pnlBody.innerHTML = '';
+
+            function addRow(title, val, bold = false, indent = false) {
+                const tr = document.createElement('tr');
+                if (bold) tr.className = 'font-bold bg-sea-50/50';
+
+                const pct = R > 0 ? ((val / R) * 100).toFixed(1) + '%' : '0%';
+
+                tr.innerHTML = `
+                    <td class="p-2.5 ${indent ? 'pl-6 text-slate-600' : 'text-slate-800'}">${title}</td>
+                    <td class="p-2.5 text-right font-mono">${formatMoney(val)}</td>
+                    <td class="p-2.5 text-right text-slate-500">${pct}</td>
+                `;
+                pnlBody.appendChild(tr);
+            }
+
+            addRow('Выручка (очищенная от НДС)', item.revenueClean, true);
+            addRow('Переменные расходы', -item.vExpClean, false, true);
+            addRow('Постоянные расходы', -item.fExpClean, false, true);
+            if (state.orgForm === 'IP') addRow('Взносы ИП за себя', -item.ipSelfCont, false, true);
+            addRow('Взносы за работников', -item.empCont, false, true);
+            addRow('Операционная прибыль', item.opProfit, true);
+            addRow(`Налог по режиму (${item.regimeTaxLabel})`, -item.tax, false);
+            if (item.vatPayable > 0) addRow('НДС к уплате', -item.vatPayable, false);
+            addRow('Чистая прибыль', item.netProfit, true);
+        }
+
+        function selectRegimeForDetails(key) {
+            state.selectedPnLKey = key;
+            calculateAndRenderAll();
+        }
+
+        function handleCurrencyInput(inputEl, fieldName) {
+            let val = parseRawNumber(inputEl.value);
+            state[fieldName] = val;
+            inputEl.value = val.toLocaleString('ru-RU');
+
+            if (state.revenue > 0) {
+                const pct = (val / state.revenue) * 100;
+                document.getElementById(`input-${fieldName.replace(/([A-Z])/g, '-$1').toLowerCase()}-pct`).value = pct < 1 ? pct.toFixed(1) : Math.round(pct);
+            }
+
+            calculateAndRenderAll();
+        }
+
+        function handlePercentInput(inputEl, fieldName) {
+            let pct = parseFloat(inputEl.value) || 0;
+            pct = Math.max(0, Math.min(100, pct));
+
+            const val = Math.round((state.revenue * pct) / 100);
+            state[fieldName] = val;
+
+            document.getElementById(`input-${fieldName.replace(/([A-Z])/g, '-$1').toLowerCase()}-display`).value = val.toLocaleString('ru-RU');
+            calculateAndRenderAll();
+        }
+
+        function setOrgForm(form) {
+            state.orgForm = form;
+            const btnIp = document.getElementById('btn-org-ip');
+            const btnOoo = document.getElementById('btn-org-ooo');
+
+            if (form === 'IP') {
+                btnIp.className = 'py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 bg-sea-700 text-white shadow-sm';
+                btnOoo.className = 'py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 text-sea-800 hover:bg-white/60';
+            } else {
+                btnOoo.className = 'py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 bg-sea-700 text-white shadow-sm';
+                btnIp.className = 'py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 text-sea-800 hover:bg-white/60';
+            }
+
+            calculateAndRenderAll();
+        }
+
+        function setContactChannel(chan) {
+            state.contactChannel = chan;
+            ['phone', 'max', 'tg'].forEach(c => {
+                const btn = document.getElementById(`btn-chan-${c}`);
+                if (btn) {
+                    btn.className = 'py-2 px-3 rounded-xl text-xs font-bold border transition text-center border-sea-200 bg-sea-50 text-sea-800 hover:bg-sea-100';
+                }
+            });
+
+            const activeBtn = document.getElementById(`btn-chan-${chan === 'Phone' ? 'phone' : (chan === 'MAX' ? 'max' : 'tg')}`);
+            if (activeBtn) {
+                activeBtn.className = 'py-2 px-3 rounded-xl text-xs font-bold border transition text-center border-sea-600 bg-sea-600 text-white';
+            }
+        }
+
+        function toggleAccordion() {
+            state.accordionOpen = !state.accordionOpen;
+            const content = document.getElementById('accordion-content');
+            const icon = document.getElementById('accordion-icon');
+
+            if (state.accordionOpen) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Calculation Methodology Modal Handlers
+        function openMethodologyModal() {
+            document.getElementById('modal-methodology').classList.remove('hidden');
+        }
+
+        function closeMethodologyModal() {
+            document.getElementById('modal-methodology').classList.add('hidden');
+        }
+
+        // Password Modal Handlers
+        function openPasswordModal() {
+            document.getElementById('modal-password').classList.remove('hidden');
+            document.getElementById('input-password').focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('modal-password').classList.add('hidden');
+            document.getElementById('input-password').value = '';
+            document.getElementById('password-error').classList.add('hidden');
+        }
+
+        function checkPassword() {
+            const pass = document.getElementById('input-password').value;
+            if (pass === PARAMS.PASSWORD) {
+                closePasswordModal();
+                openParamsModal();
+            } else {
+                document.getElementById('password-error').classList.remove('hidden');
+            }
+        }
+
+        // Legislative Parameters Modal Handlers
+        function openParamsModal() {
+            document.getElementById('modal-params').classList.remove('hidden');
+        }
+
+        function closeParamsModal() {
+            document.getElementById('modal-params').classList.add('hidden');
+        }
+
+        function saveParams() {
+            PARAMS.USN_INC_RATE = (parseFloat(document.getElementById('param-usn-inc').value) || 6) / 100;
+            PARAMS.USN_DR_RATE = (parseFloat(document.getElementById('param-usn-dr').value) || 15) / 100;
+            PARAMS.AUSN_INC_RATE = (parseFloat(document.getElementById('param-ausn-inc').value) || 8) / 100;
+            PARAMS.AUSN_DR_RATE = (parseFloat(document.getElementById('param-ausn-dr').value) || 20) / 100;
+            PARAMS.OSNO_OOO_RATE = (parseFloat(document.getElementById('param-osno-ooo').value) || 25) / 100;
+            PARAMS.IP_FIXED_CONTRIBUTION = parseFloat(document.getElementById('param-ip-fix').value) || 57390;
+
+            closeParamsModal();
+            calculateAndRenderAll();
+        }
+
+        // Legal Documents Modal Handler
+        function openDocModal(docType) {
+            const modal = document.getElementById('modal-legal-doc');
+            const titleEl = document.getElementById('legal-doc-title');
+            const contentEl = document.getElementById('legal-doc-content');
+
+            if (docType === 'consent') {
+                titleEl.innerText = 'Согласие на обработку персональных данных';
+                contentEl.innerHTML = `
+                    <p>Настоящим я выражаю свое безусловное согласие на обработку моих персональных данных (имя, телефон, адрес электронной почты, параметры организации) в соответствии с Федеральным законом № 152-ФЗ «О персональных данных».</p>
+                    <p>Обработка персональных данных осуществляется в целях предоставления консультаций по выбору налогового режима, связи с пользователем и подготовки расчетов.</p>
+                    <p>Согласие действует с момента отправки формы до момента его отзыва пользователем путем обращения к оператору персональных данных.</p>
+                `;
+            } else if (docType === 'policy') {
+                titleEl.innerText = 'Политика в отношении обработки персональных данных';
+                contentEl.innerHTML = `
+                    <p>1. Настоящая Политика определяет порядок обработки и защиты персональных данных пользователей сервиса «Налоговый калькулятор 2026».</p>
+                    <p>2. Оператор принимает все необходимые технические и организационные меры для защиты персональных данных от несанкционированного доступа, изменения или уничтожения.</p>
+                    <p>3. Персональные данные пользователей не передаются третьим лицам, за исключением случаев, прямо предусмотренных законодательством Российской Федерации.</p>
+                `;
+            } else if (docType === 'newsletter') {
+                titleEl.innerText = 'Согласие на получение рекламных и новостных рассылок';
+                contentEl.innerHTML = `
+                    <p>Настоящим я соглашаюсь на получение информационных, новостных и рекламных материалов, касающихся изменений в налоговом законодательстве 2026 года и услуг консультации.</p>
+                    <p>Вы можете отказаться от получения рассылки в любой момент, нажав на ссылку отписки в письме или отправив запрос оператору.</p>
+                `;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeLegalModal() {
+            document.getElementById('modal-legal-doc').classList.add('hidden');
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submit-btn');
+            const origText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Отправка...`;
+
+            const name = document.getElementById('lead-name').value;
+            const phone = document.getElementById('lead-phone').value;
+            const question = document.getElementById('lead-question').value;
+            const newsConsent = document.getElementById('consent-news').checked ? 'Да' : 'Нет';
+
+            const summaryText = `ЗАЯВКА НА КОНСУЛЬТАЦИЮ (Калькулятор 2026)\n• Имя: ${name}\n• Телефон: ${phone}\n• Канал связи: ${state.contactChannel}\n• Организация: ${state.orgForm}\n• Выручка: ${formatMoney(state.revenue)}\n• Согласие на рассылку: ${newsConsent}\n• Вопрос: ${question || 'Не указан'}`;
+
+            state.lastLeadText = summaryText;
+            document.getElementById('lead-summary-text').innerText = summaryText;
+
+            // Direct FormSubmit via HTML Form element in new tab to trigger initial activation screen safely
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://formsubmit.co/elenaivasina6251@gmail.com';
+            form.target = '_blank';
+
+            const fields = {
+                'Имя': name,
+                'Телефон': phone,
+                'Предпочитаемый канал': state.contactChannel,
+                'Организационная форма': state.orgForm,
+                'Выручка': formatMoney(state.revenue),
+                'Согласие на рассылку': newsConsent,
+                'Вопрос': question || 'Не указан',
+                '_subject': `Новая заявка на консультацию от ${name}`,
+                '_captcha': 'false'
+            };
+
+            for (const [key, val] of Object.entries(fields)) {
+                const hiddenField = document.createElement('input');
+                hiddenField.type = 'hidden';
+                hiddenField.name = key;
+                hiddenField.value = val;
+                form.appendChild(hiddenField);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origText;
+            document.getElementById('modal-submission-success').classList.remove('hidden');
+            document.getElementById('consultation-form').reset();
+        }
+
+        function copyLeadToClipboard() {
+            if (!state.lastLeadText) return;
+            const tempElem = document.createElement('textarea');
+            tempElem.value = state.lastLeadText;
+            document.body.appendChild(tempElem);
+            tempElem.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempElem);
+            alert('Текст заявки успешно скопирован в буфер обмена!');
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('modal-submission-success').classList.add('hidden');
+        }
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', function () {
+            calculateAndRenderAll();
+        });
+    </script>
+</body>
+</html>
