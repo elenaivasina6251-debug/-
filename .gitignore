@@ -1,0 +1,15 @@
+# Локальные настройки и секреты
+.env
+.env.*
+!.env.example
+
+# Зависимости и результаты сборки
+node_modules/
+.next/
+dist/
+build/
+
+# Локальные журналы и файлы ОС
+*.log
+.DS_Store
+Thumbs.db
